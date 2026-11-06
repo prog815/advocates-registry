@@ -537,15 +537,13 @@
       // 2. Жесткий фильтр по региону (без поиска по подстроке)
       if (selRegion && r.region !== selRegion) return false;
 
-      // 3. Текстовый поиск по остальным полям (если есть введенные токены)
+      // 3. Текстовый поиск только по разрешенным полям (без статуса и региона)
       if (tokens.length > 0) {
         var blob = normName(
           r.id + ' ' + 
           r.full_name + ' ' + 
           r.reg_number + ' ' + 
-          // r.region + ' ' +  <-- ИСКЛЮЧЕНО
           r.license_number + ' ' + 
-          // r.status + ' ' +  <-- ИСКЛЮЧЕНО
           r.previous_name + ' ' + 
           r.chamber
         );
@@ -645,12 +643,14 @@
     
     var nameHtml = highlight(r.full_name, queryTokens);
     var regNumHtml = highlight(r.reg_number, queryTokens);
-    var regionHtml = highlight(r.region, queryTokens);
     var licenseHtml = highlight(r.license_number, queryTokens);
     var prevNameHtml = highlight(r.previous_name, queryTokens);
     var chamberHtml = highlight(r.chamber, queryTokens);
     var idHtml = highlight(r.id, queryTokens);
-    var statusHtml = highlight(r.status, queryTokens);
+    
+    // Регион и Статус НЕ подсвечиваем, так как они не участвуют в текстовом поиске
+    var regionHtml = esc(r.region);
+    var statusHtml = esc(r.status);
 
     // Определяем CSS-класс для статуса
     var statusClass = 'status-terminated'; // по умолчанию серый
