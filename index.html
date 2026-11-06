@@ -99,8 +99,8 @@
   h1{font-size:24px;margin:0 0 4px;letter-spacing:-.02em}
   .sub{color:var(--muted);margin:0 0 12px;font-size:14px}
 
-  /* Поисковая строка */
-  .search-container{padding:12px 0 8px}
+  /* Панель поиска и фильтров */
+  .search-container{padding:12px 0 8px; display: flex; flex-direction: column; gap: 10px;}
   .searchbar{display:flex; gap:8px; align-items:stretch}
   .searchbar input[type=text]{
     flex:1; min-width:0; font-size:16px; padding:12px 16px;
@@ -109,6 +109,42 @@
     transition:border-color .2s;
   }
   .searchbar input[type=text]:focus{border-color:var(--brand); box-shadow:0 0 0 3px var(--accent)}
+
+  /* Выпадающие фильтры */
+  .filters-row {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .filters-row select {
+    flex: 1 1 200px;
+    padding: 10px 14px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background-color: var(--panel);
+    color: var(--ink);
+    font-family: inherit;
+    font-size: 14px;
+    outline: none;
+    cursor: pointer;
+    transition: border-color .2s;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%235b6b7f%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+    background-repeat: no-repeat, repeat;
+    background-position: right .7em top 50%, 0 0;
+    background-size: .65em auto, 100%;
+  }
+  @media(prefers-color-scheme:dark){
+    .filters-row select {
+      background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%2394a3b8%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+    }
+  }
+  .filters-row select:focus {
+    border-color: var(--brand);
+    box-shadow: 0 0 0 3px var(--accent);
+  }
 
   .meta-line{
     display:flex; justify-content:space-between; align-items:center;
@@ -141,11 +177,6 @@
     padding:2px 8px; cursor:pointer;
   }
   .id-badge:hover{border-color:var(--brand)}
-
-  .tag{
-    font-size:11px; font-weight:600; border-radius:999px; padding:2px 10px;
-    background:var(--od-bg); color:var(--od); border:1px solid rgba(124,58,237,.2);
-  }
 
   /* Бейджи статусов */
   .status-badge {
@@ -245,6 +276,7 @@
     .wrap{padding:0 12px}
     .name{font-size:15px}
     .info-item{flex: 1 1 100%;}
+    .filters-row select{flex: 1 1 100%}
   }
 </style>
 </head>
@@ -271,13 +303,25 @@
   <div class="search-container">
     <div class="searchbar">
       <input id="q" type="text" autocomplete="off" spellcheck="false"
-             placeholder="ФИО, реестровый номер, регион, статус, палата..." title="Введите ФИО адвоката, регистрационный номер, субъект РФ, статус или адвокатскую палату для поиска">
+             placeholder="ФИО, реестровый номер, палата..." title="Введите ФИО адвоката, регистрационный номер или адвокатскую палату для поиска">
+    </div>
+    
+    <div class="filters-row">
+      <select id="filter-status" title="Фильтр по статусу">
+        <option value="">Все статусы</option>
+        <!-- Опции добавляются через JS -->
+      </select>
+      
+      <select id="filter-region" title="Фильтр по субъекту РФ">
+        <option value="">Все регионы</option>
+        <!-- Опции добавляются через JS -->
+      </select>
     </div>
   </div>
 
   <div class="meta-line">
     <div class="count" id="count">Загрузка...</div>
-    <div class="clear-link" id="clear-all" style="display:none" title="Сбросить поисковый запрос и показать все записи">Очистить</div>
+    <div class="clear-link" id="clear-all" style="display:none" title="Сбросить все фильтры и поисковый запрос">Очистить</div>
   </div>
 
   <div id="status">Загрузка данных реестра...</div>
@@ -299,7 +343,7 @@
       </div>
       <div>
         <div class="row-label">Первоисточники и текстовые редакции для сверки:</div>
-        <a href="https://minjust.gov.ru/" target="_blank" rel="noopener">Официальный сайт Минюста России</a> · 
+        <a href="https://minjust.gov.ru/ru/" target="_blank" rel="noopener">Официальный сайт Минюста России</a> · 
         <a href="https://github.com/prog815/advocates-registry" target="_blank" rel="noopener" title="Исходный код и описание справочника">О справочнике</a>
       </div>
       <div>
@@ -331,8 +375,7 @@
 (function(){
   "use strict";
 
-  // Для реестра из 153к записей увеличено до 50 (вместо 20) для удобства листания
-  var PAGE = 50;
+  var PAGE = 20;
   var DATA = [];
   var META = null;
   var activeDeepLinkCode = null;
@@ -340,6 +383,8 @@
 
   var els = {
     q: document.getElementById('q'),
+    filterStatus: document.getElementById('filter-status'),
+    filterRegion: document.getElementById('filter-region'),
     clearAll: document.getElementById('clear-all'),
     count: document.getElementById('count'),
     status: document.getElementById('status'),
@@ -394,8 +439,40 @@
 
   function updateClearVisibility() {
     var hasQuery = String(els.q.value || '').length > 0;
+    var hasStatus = String(els.filterStatus.value || '').length > 0;
+    var hasRegion = String(els.filterRegion.value || '').length > 0;
     var hasCode = !!activeDeepLinkCode;
-    els.clearAll.style.display = (hasQuery || hasCode) ? 'block' : 'none';
+    
+    els.clearAll.style.display = (hasQuery || hasCode || hasStatus || hasRegion) ? 'block' : 'none';
+  }
+
+  function populateFilters() {
+    var statuses = new Set();
+    var regions = new Set();
+    
+    DATA.forEach(function(r) {
+      if (r.status) statuses.add(r.status);
+      if (r.region) regions.add(r.region);
+    });
+
+    var sortedStatuses = Array.from(statuses).sort();
+    var sortedRegions = Array.from(regions).sort();
+
+    // Заполняем статусы
+    sortedStatuses.forEach(function(s) {
+      var opt = document.createElement('option');
+      opt.value = s;
+      opt.textContent = s;
+      els.filterStatus.appendChild(opt);
+    });
+
+    // Заполняем регионы
+    sortedRegions.forEach(function(r) {
+      var opt = document.createElement('option');
+      opt.value = r;
+      opt.textContent = r;
+      els.filterRegion.appendChild(opt);
+    });
   }
 
   async function boot(){
@@ -408,9 +485,6 @@
 
       if(!Array.isArray(raw)) throw new Error('bad data shape');
 
-      // Маппинг полей адвокатов (9 элементов): 
-      // [0] id, [1] full_name, [2] reg_number, [3] region, [4] license_number, 
-      // [5] status, [6] previous_name, [7] chamber, [8] source_order
       DATA = raw.map(function(it) {
         return {
           id: String(it[0] || ''),
@@ -425,7 +499,8 @@
         };
       });
 
-      // Подставляем данные в статический футер
+      populateFilters();
+
       if (META) {
         els.footstats.textContent = 'В справочнике ' + fmt(META.records_count) + ' записей.';
         els.footdate.textContent = META.change_display || '';
@@ -451,12 +526,19 @@
   function runSearch(){
     var query = normName(els.q.value);
     var tokens = query.split(' ').filter(Boolean);
+    
+    var selStatus = els.filterStatus.value;
+    var selRegion = els.filterRegion.value;
 
-    if (tokens.length === 0) {
-      view.list = DATA;
-    } else {
-      view.list = DATA.filter(function(r){
-        // Поиск AND по всем полям
+    view.list = DATA.filter(function(r){
+      // 1. Жесткий фильтр по статусу
+      if (selStatus && r.status !== selStatus) return false;
+      
+      // 2. Жесткий фильтр по региону (без поиска по подстроке)
+      if (selRegion && r.region !== selRegion) return false;
+
+      // 3. Текстовый поиск по остальным полям (если есть введенные токены)
+      if (tokens.length > 0) {
         var blob = normName(
           r.id + ' ' + 
           r.full_name + ' ' + 
@@ -470,9 +552,10 @@
         for(var i=0; i<tokens.length; i++){
           if(blob.indexOf(tokens[i]) === -1) return false;
         }
-        return true;
-      });
-    }
+      }
+      
+      return true;
+    });
 
     view.shown = 0;
     els.results.innerHTML = '';
@@ -502,7 +585,7 @@
   function appendPage(){
     var total = view.list.length;
     if(total === 0){
-      els.results.innerHTML = '<div style="padding:32px 4px;text-align:center;color:var(--muted)">Ничего не найдено.</div>';
+      els.results.innerHTML = '<div style="padding:32px 4px;text-align:center;color:var(--muted)">Ничего не найдено. Попробуйте изменить параметры поиска или фильтры.</div>';
       renderCount(); renderMore(); return;
     }
 
@@ -614,16 +697,19 @@
   els.q.addEventListener('input', function(){
     activeDeepLinkCode = null;
     clearCodeFromUrl();
-    updateClearVisibility();
     clearTimeout(debTimer);
     debTimer = setTimeout(runSearch, 180);
   });
 
+  els.filterStatus.addEventListener('change', runSearch);
+  els.filterRegion.addEventListener('change', runSearch);
+
   function clearAllAction() {
     els.q.value = '';
+    els.filterStatus.value = '';
+    els.filterRegion.value = '';
     activeDeepLinkCode = null;
     clearCodeFromUrl();
-    updateClearVisibility();
     runSearch();
     els.q.focus();
   }
